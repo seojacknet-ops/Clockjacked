@@ -1,6 +1,8 @@
 # CLAUDE.md — ClockJacked Project Instructions
 
-> **Read this file first. Then read docs/CLOCKJACKED.md, docs/AGENTS.md, TODO.md, and docs/FEATURES.md before writing any code.**
+> **Read this file first. Then read CLOCKJACKED.md, AGENTS.md, TODO.md, FEATURES.md, ASSETS.md, WIDGET-FIX.md, and AUDIO.md before writing any code.**
+
+> **⚠️ CRITICAL: Widgets are currently broken on the target device (Xiaomi 14 Pro / HyperOS). Read WIDGET-FIX.md IMMEDIATELY and fix before any other work.**
 
 ---
 
@@ -13,9 +15,9 @@
 ## Critical Rules — Never Break These
 
 ### DO:
-- Read ALL .md files in the project root and docs/ before starting any work
-- Follow the phased build strategy in docs/CLOCKJACKED.md
-- Adopt the appropriate agent role from docs/AGENTS.md for each task
+- Read ALL .md files in the project root before starting any work
+- Follow the phased build strategy in CLOCKJACKED.md
+- Adopt the appropriate agent role from AGENTS.md for each task
 - Update TODO.md as you complete tasks (check off items)
 - Write clean, well-commented Kotlin code
 - Use `java.time` for ALL time operations
@@ -24,7 +26,7 @@
 - Use Jetpack Glance for the widget
 - Keep the APK under 10MB
 - Support Android 8.0+ (API 26+)
-- Target Android 15 (API 35)
+- Target Android 14 (API 34)
 - Test on Xiaomi devices (MIUI/HyperOS considerations)
 - Commit logically with clear messages
 
@@ -44,17 +46,17 @@
 ## Tech Stack (Locked In)
 
 ```
-Language:           Kotlin 2.0+
-UI Framework:       Jetpack Compose (BOM 2024.12.01)
+Language:           Kotlin 1.9+
+UI Framework:       Jetpack Compose (BOM latest stable)
 Design System:      Material 3 (Material You)
 Architecture:       MVVM (ViewModel + StateFlow)
-Persistence:        DataStore + kotlinx.serialization
-Widget:             Jetpack Glance 1.1+
+Persistence:        DataStore Preferences
+Widget:             Jetpack Glance 1.0+
 Async:              Kotlin Coroutines + Flow
-Build System:       Gradle Kotlin DSL (AGP 8.7.3)
+Build System:       Gradle Kotlin DSL
 Min SDK:            26
-Target SDK:         35
-Compile SDK:        35
+Target SDK:         34
+Compile SDK:        34
 ```
 
 ---
@@ -63,10 +65,8 @@ Compile SDK:        35
 
 ```
 app/src/main/java/com/clockjacked/app/
-├── ClockJackedApp.kt                 # Application class (manual DI)
-├── MainActivity.kt                   # Single activity entry point
-├── audio/
-│   └── MusicManager.kt              # Audio playback management
+├── ClockJackedApp.kt                # Application class (if needed)
+├── MainActivity.kt                  # Single activity entry point
 ├── ui/
 │   ├── theme/
 │   │   ├── Theme.kt                 # Material 3 theme definition
@@ -77,11 +77,9 @@ app/src/main/java/com/clockjacked/app/
 │   ├── screens/
 │   │   ├── DashboardScreen.kt       # Main clock list
 │   │   ├── AddClockScreen.kt        # Search & add timezone
-│   │   ├── AboutScreen.kt           # Credits page
-│   │   └── CrewModeScreen.kt        # Crew overlap timeline view
+│   │   └── AboutScreen.kt           # Credits page
 │   └── components/
 │       ├── ClockCard.kt             # Individual clock display card
-│       ├── ClockActionSheet.kt      # Long-press action sheet
 │       ├── TimezoneSearchBar.kt     # Search input with results
 │       ├── DayNightIndicator.kt     # Sun/moon icon
 │       └── EmptyState.kt            # Shown when no clocks added
@@ -92,22 +90,15 @@ app/src/main/java/com/clockjacked/app/
 │   │   └── ClockEntry.kt            # Data class for a saved clock
 │   ├── repository/
 │   │   └── ClockRepository.kt       # Data operations
-│   ├── TimezoneDatabase.kt          # Static city→timezone mappings (422 cities)
-│   └── PreferencesManager.kt        # DataStore wrapper (JSON serialization)
+│   ├── TimezoneDatabase.kt          # Static city→timezone mappings
+│   └── PreferencesManager.kt        # DataStore wrapper
 ├── widget/
 │   ├── ClockJackedWidget.kt         # Glance widget composable
-│   ├── ClockJackedWidgetReceiver.kt # Glance widget receiver
 │   ├── WidgetConfigActivity.kt      # Widget config screen
 │   └── WidgetUpdateWorker.kt        # WorkManager for updates
 └── util/
     ├── TimeFormatter.kt             # Time/date formatting utils
-    ├── TimeDiffCalculator.kt        # Offset calculation utils
-    ├── CallStatusCalculator.kt      # Traffic light call status
-    ├── VibeLabelCalculator.kt       # Time-of-day vibe labels
-    ├── TimeTintCalculator.kt        # Breathing background tints
-    ├── ShareFormatter.kt            # Quick share text formatting
-    ├── CrewOverlapCalculator.kt     # Crew overlap calculation
-    └── EasterEggManager.kt          # Easter egg session management
+    └── TimeDiffCalculator.kt        # Offset calculation utils
 ```
 
 ---
@@ -176,10 +167,7 @@ data class ClockEntry(
     val cityName: String,
     val timezoneId: String,    // IANA timezone ID
     val flagEmoji: String,
-    val position: Int = 0,
-    val isHomeBase: Boolean = false,
-    val nickname: String? = null,
-    val isCrew: Boolean = false
+    val position: Int = 0
 )
 
 // Use StateFlow in ViewModels
@@ -291,7 +279,7 @@ chore: configure R8 rules for release build
 ---
 
 ### Phase 6: Extras & Personalization 🎨
-**See docs/FEATURES.md for full specs. Build in this order:**
+**See FEATURES.md for full specs. Build in this order:**
 1. Home Base Clock (data model update + UI pinning)
 2. Traffic Light Call Status (call status logic + colored dots)
 3. Vibe Labels (time-of-day string mapping)
@@ -303,4 +291,4 @@ chore: configure R8 rules for release build
 
 ---
 
-*Read docs/CLOCKJACKED.md for full feature spec. Read docs/AGENTS.md for agent roles. Read docs/FEATURES.md for extras. Check TODO.md for current progress.* ⚡
+*Read CLOCKJACKED.md for full feature spec. Read AGENTS.md for agent roles. Read FEATURES.md for extras. Check TODO.md for current progress.* ⚡
